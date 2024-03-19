@@ -1,7 +1,9 @@
 package fr.isen.Jail.androiderestaurant
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,9 +32,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import fr.isen.Jail.androiderestaurant.ui.theme.AndroidERestaurantTheme
 
-// Rest of your code...
+
+private fun goToCategory(context: Context, category: String) {
+    Log.d("MainActivity", "Navigue vers CategoryActivity avec catégorie: $category")
+    val intent = Intent(context, CategoryActivity::class.java).apply {
+        putExtra("category_name", category)
+    }
+    context.startActivity(intent)
+}
 
 class HomeActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +51,7 @@ class HomeActivity : ComponentActivity() {
         setContent {
             AndroidERestaurantTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                Surface(modifier = Modifier.fillMaxSize()) {
                     Column {
                         Image(
                             painter = painterResource(id = R.drawable.resto_image),
@@ -58,14 +68,18 @@ class HomeActivity : ComponentActivity() {
                                 Spacer(modifier = Modifier.height(16.dp))
 
                                 MenuCategory("Entrée") {
+                                    Log.d("HomeActivity", "Entrée clicked")
                                     Toast.makeText(context, "Vous avez cliqué sur Entrée", Toast.LENGTH_SHORT).show()
-                                    val intent = Intent(context, EntreeActivity::class.java)
+                                    val intent = Intent(context, CategoryActivity::class.java)
+                                    intent.putExtra("categoryName", "Entrée") // Replace "Entrée" with the category name
                                     context.startActivity(intent)
                                 }
                                 MenuCategory("Plat") {
+                                    Log.d("HomeActivity", "Plat clicked")
                                     Toast.makeText(context, "Vous avez cliqué sur Plat", Toast.LENGTH_SHORT).show()
                                 }
                                 MenuCategory("Dessert") {
+                                    Log.d("HomeActivity", "Dessert clicked")
                                     Toast.makeText(context, "Vous avez cliqué sur Dessert", Toast.LENGTH_SHORT).show()
                                 }
                             }
@@ -77,15 +91,16 @@ class HomeActivity : ComponentActivity() {
                             )
 
                         }
-                        }
                     }
                 }
             }
         }
     }
+}
 fun navigateToDishDetail(dishName: String) {
     // Navigate to the detail screen for the selected dish
     // You can implement your navigation logic here
+    Log.d("HomeActivity", "Navigating to detail for dish: $dishName")
 }
 
 
