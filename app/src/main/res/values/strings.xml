@@ -3,4 +3,5 @@
     <string name="home_welcome">Bienvenue \nchez</string>
     <string name="home_welcome_app_name">DroidRestaurant</string>
     <string name="title_activity_entree">EntreeActivity</string>
+    <string name="title_activity_plate_composition">Entree Composition</string>
 </resources>
