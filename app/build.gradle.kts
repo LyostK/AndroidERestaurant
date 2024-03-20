@@ -48,6 +48,13 @@ android {
 
 dependencies {
     implementation ("com.google.code.gson:gson:2.8.9")
+    implementation ("io.coil-kt:coil-compose:1.4.0")
+    implementation ("com.google.accompanist:accompanist-pager:0.20.2")
+    implementation ("androidx.compose.material3:material3:1.2.1")
+    implementation ("androidx.compose.material3:material3-android:1.2.1")
+
+
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -59,6 +66,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.appcompat)
     implementation(libs.volley)
+    implementation(libs.androidx.material3.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

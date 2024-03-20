@@ -20,10 +20,15 @@ data class Ingredient(
     @SerializedName("name_fr") val nameFr: String
 ): Serializable
 
+data class Price(
+    @SerializedName("price") val price: Double
+): Serializable
+
 data class Dish(
     @SerializedName("name_fr") val nameFr: String,
     @SerializedName("images") val images: List<String>,
-    @SerializedName("ingredients") val ingredients: List<Ingredient>
+    @SerializedName("ingredients") val ingredients: List<Ingredient>,
+    @SerializedName("prices") val prices: List<Price> // Add this line
 ): Serializable
 
 data class Category(
@@ -34,3 +39,4 @@ data class Category(
 data class MenuResponse(
     @SerializedName("data") val data: List<Category>
 ): Serializable
+
