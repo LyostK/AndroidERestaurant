@@ -7,4 +7,10 @@
     <string name="title_activity_category">CategoryActivity</string>
     <string name="title_activity_dish_detail">DishDetailActivity</string>
     <string name="title_activity_modele">Modele</string>
+    <string name="cart">Cart</string>
+    <string name="title_activity_cart">CartActivity</string>
+    <string name="title_activity_cart_items">CartItems</string>
+    <string name="title_activity_order">OrderActivity</string>
+    <string name="title_activity_basket">BasketActivity</string>
+
 </resources>

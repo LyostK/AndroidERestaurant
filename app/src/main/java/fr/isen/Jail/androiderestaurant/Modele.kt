@@ -22,6 +22,7 @@ data class Ingredient(
 
 data class Price(
     @SerializedName("price") val price: Double
+
 ): Serializable
 
 data class Dish(
@@ -39,4 +40,3 @@ data class Category(
 data class MenuResponse(
     @SerializedName("data") val data: List<Category>
 ): Serializable
-

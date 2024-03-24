@@ -67,6 +67,8 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.volley)
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.media3.exoplayer)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.isen.Jail.androiderestaurant.ui.theme.AndroidERestaurantTheme
-
 
 class HomeActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -93,41 +94,29 @@ class HomeActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_cart -> {
+                val intent = Intent(this, CartActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 }
+
 fun navigateToDishDetail(dishName: String) {
     // Navigate to the detail screen for the selected dish
     // You can implement your navigation logic here
     Log.d("HomeActivity", "Navigating to detail for dish: $dishName")
 }
-
-
-                        /* Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Greeting("Android")
-                            val context = LocalContext.current
-                            Column {
-                                Button(onClick = {
-                                    Toast.makeText(context, "Je fonctionne", Toast.LENGTH_SHORT).show()
-                                }) {
-                                    Text("Entrée")
-                                }
-                                Button(onClick = {
-                                    Toast.makeText(context, "Je fonctionne", Toast.LENGTH_SHORT).show()
-                                }) {
-                                    Text("Plat")
-                                }
-                                Button(onClick = {
-                                    Toast.makeText(context, "Je fonctionne", Toast.LENGTH_SHORT).show()
-                                }) {
-                                    Text("Dessert")
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-*/
 
 @Composable
 fun CategoryScreen(categoryName: String, dishes: List<String>, navigateToDishDetail: (String) -> Unit) {
@@ -164,4 +153,3 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
-
