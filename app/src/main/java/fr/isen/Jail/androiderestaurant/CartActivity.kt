@@ -1,47 +1,102 @@
 // CartActivity.kt
+
 package fr.isen.Jail.androiderestaurant
 
-import android.net.Uri
+import android.content.Context
 import android.os.Bundle
-import android.provider.MediaStore.Video
-import android.util.Log
-import android.widget.MediaController
-import android.widget.VideoView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.media3.exoplayer.analytics.AnalyticsListener
+import fr.isen.Jail.androiderestaurant.ui.theme.AndroidERestaurantTheme
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.io.FileNotFoundException
+
+class OrderActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            AndroidERestaurantTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    val cartItems = getCartItems(this)
+                    ScaffoldCart(activity =this@OrderActivity, cartItems = cartItems)
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ScaffoldCart(activity: OrderActivity, cartItems: List<CartItem>) {
+    // ...
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp) // replace 16.dp with your desired padding
+    ) {
+        Column {
+            cartItems.forEach { cartItem ->
+                CartItemComposable(cartItem) // Pass the entire cart item
+            }
+        }
+    }
+    // ...
+}
+
+@Composable
+fun CartItemComposable(cartItem: CartItem) {
+    val dish = cartItem // Access the dish property from the CartItem
+    val quantity = cartItem.quantity // Access the quantity property from the CartItem
+
+    Text(text = "${dish} x $quantity")
+}
+
+fun getCartItemsFromActivity(context: Context): MutableList<CartItem> {
+    val gson = Gson()
+    val json = try {
+        context.openFileInput("cart.json")?.bufferedReader().use { it?.readText() }
+    } catch (e: FileNotFoundException) {
+        null
+    }
+    if (json.isNullOrEmpty()) {
+        return mutableListOf()
+    }
+    val type = object : TypeToken<MutableList<CartItem>>() {}.type
+    return gson.fromJson(json, type)
+}
+
+
+/* package fr.isen.Jail.androiderestaurant
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import fr.isen.Jail.androiderestaurant.ui.theme.AndroidERestaurantTheme
 
 class OrderActivity : ComponentActivity() {
@@ -54,7 +109,8 @@ class OrderActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ScaffoldOrder(activity =this@OrderActivity)
+                    val cartItems = getCartItems(this)
+                    ScaffoldCart(activity =this@OrderActivity, cartItems = cartItems)
                 }
             }
         }
@@ -63,66 +119,27 @@ class OrderActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScaffoldOrder(activity: OrderActivity) {
-
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF011222),
-                    titleContentColor = Color(0xFFfef8d8),
-                ),
-                title = {
-                    Text(
-                        "Thanks for your order !",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { activity.finish() }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Image(
-                            painter = painterResource(id = R.drawable.chariot),
-                            contentDescription = "Localized description",
-                            modifier = Modifier
-                                .height(80.dp)
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior,
-            )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = Color(0xFF011222),
-                contentColor = Color(0xFFfef8d8),
-            ) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    text = "Muscle Rat's Restaurant",
-                )
+fun ScaffoldCart(activity: OrderActivity, cartItems: List<CartItem>) {
+    // ...
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp) // replace 16.dp with your desired padding
+    ) {
+        Column {
+            cartItems.forEach { cartItem ->
+                CartItemComposable(cartItem) // Pass the entire cart item
             }
-        },
-
-        ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            Greeting(name = "")
         }
     }
+    // ...
 }
+
+@Composable
+fun CartItemComposable(cartItem: CartItem) {
+    val dish = cartItem.dish // Access the dish property from the CartItem
+    val quantity = cartItem.quantity // Access the quantity property from the CartItem
+
+    Text(text = "${dish.nameFr} x $quantity")
+}
+*/

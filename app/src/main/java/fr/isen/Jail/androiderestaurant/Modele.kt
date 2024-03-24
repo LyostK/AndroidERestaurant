@@ -1,18 +1,6 @@
+// Modele.kt
 package fr.isen.Jail.androiderestaurant
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import fr.isen.Jail.androiderestaurant.ui.theme.AndroidERestaurantTheme
-
-// Définition des modèles de données basés sur la structure JSON.
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
@@ -22,14 +10,13 @@ data class Ingredient(
 
 data class Price(
     @SerializedName("price") val price: Double
-
 ): Serializable
 
 data class Dish(
     @SerializedName("name_fr") val nameFr: String,
     @SerializedName("images") val images: List<String>,
     @SerializedName("ingredients") val ingredients: List<Ingredient>,
-    @SerializedName("prices") val prices: List<Price> // Add this line
+    @SerializedName("prices") val prices: List<Price>
 ): Serializable
 
 data class Category(
@@ -39,4 +26,10 @@ data class Category(
 
 data class MenuResponse(
     @SerializedName("data") val data: List<Category>
+): Serializable
+
+data class CartItem(
+    val dish: String,
+    val quantity: Int,
+    val price: Float
 ): Serializable

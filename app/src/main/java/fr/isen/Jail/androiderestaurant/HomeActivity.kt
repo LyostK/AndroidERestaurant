@@ -1,4 +1,5 @@
 package fr.isen.Jail.androiderestaurant
+import fr.isen.Jail.androiderestaurant.CartActivity
 
 import android.content.Context
 import android.content.Intent
@@ -35,6 +36,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.isen.Jail.androiderestaurant.ui.theme.AndroidERestaurantTheme
+
+import androidx.appcompat.app.AppCompatActivity
+
+
+class CartActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_cart) // Replace with your actual layout
+    }
+}
 
 class HomeActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -103,7 +114,7 @@ class HomeActivity : ComponentActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_cart -> {
-                val intent = Intent(this, CartActivity::class.java)
+                val intent = Intent(this, OrderActivity::class.java)
                 startActivity(intent)
                 true
             }
