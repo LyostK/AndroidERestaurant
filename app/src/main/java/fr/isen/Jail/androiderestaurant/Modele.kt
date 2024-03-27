@@ -28,8 +28,4 @@ data class MenuResponse(
     @SerializedName("data") val data: List<Category>
 ): Serializable
 
-data class CartItem(
-    val dish: String,
-    val quantity: Int,
-    val price: Float
-): Serializable
+data class CartItem(val dish: String, var quantity: Int, var price: Float) {}

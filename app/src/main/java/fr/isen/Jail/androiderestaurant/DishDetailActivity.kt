@@ -2,7 +2,11 @@
 package fr.isen.Jail.androiderestaurant
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -21,21 +25,18 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.gson.Gson
-import fr.isen.Jail.androiderestaurant.Dish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.OutputStreamWriter
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.LocalImageLoader
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import com.google.common.reflect.TypeToken
 
-data class CartItem(val dishName: String, val quantity: Int, val price: Float)
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
@@ -119,22 +120,38 @@ class DishDetailActivity : ComponentActivity() {
                         // Other composables...
 
                         Button(onClick = {
-                            // Handle click
-                            val cartItem = CartItem(dish.nameFr, quantity, price.toFloat() * quantity)
-                            val cartItems = mutableListOf<CartItem>()
-                            cartItems.add(cartItem)
-                            val gson = Gson()
-                            val cartItemsJson = gson.toJson(cartItems)
-                            applicationContext.openFileOutput("cart.json", Context.MODE_PRIVATE).use {
-                                OutputStreamWriter(it).use { writer ->
-                                    writer.write(cartItemsJson)
-                                }
+                        // Handle click
+                        val cartItem = CartItem(dish.nameFr, quantity, price.toFloat() * quantity)
+                        val gson = Gson()
+
+                        // Read the existing content of the file
+                        val existingCartItemsJson = applicationContext.openFileInput("cart.json").bufferedReader().use { it.readText() }
+
+                        // Deserialize it into a list of CartItem
+                        val cartItems: MutableList<CartItem> = if (existingCartItemsJson.isNotBlank()) {
+    gson.fromJson(existingCartItemsJson, object : TypeToken<List<CartItem>>() {}.type) as MutableList<CartItem>
+} else {
+    mutableListOf<CartItem>()
+}
+
+                        // Add the new item to the list
+                        cartItems.add(cartItem)
+
+                        // Serialize the updated list back into JSON
+                        val cartItemsJson = gson.toJson(cartItems)
+
+                        // Write the updated JSON back to the file
+                        applicationContext.openFileOutput("cart.json", Context.MODE_PRIVATE).use {
+                            OutputStreamWriter(it).use { writer ->
+                                writer.write(cartItemsJson)
                             }
-                            snackbarHostState.currentSnackbarData?.dismiss()
-                            CoroutineScope(Dispatchers.Main).launch {
-                                snackbarHostState.showSnackbar("Item added to cart")
-                            }
-                        }, modifier = Modifier.padding(bottom = 20.dp)) {
+                        }
+
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            snackbarHostState.showSnackbar("Item added to cart")
+                        }
+                    }, modifier = Modifier.padding(bottom = 20.dp)){
                             Box(modifier = Modifier.size(width = 300.dp, height = 25.dp), contentAlignment = Alignment.Center) {
                                 val totalPrice = price.toDouble() * quantity.toFloat()
                                 Text(text = "Total: ${totalPrice} €")
@@ -146,4 +163,22 @@ class DishDetailActivity : ComponentActivity() {
             }
         }
     }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_cart -> {
+                val intent = Intent(this, OrderActivity::class.java)
+                Log.d("DishDetailActivity", "Cart clicked")
+
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+
 }

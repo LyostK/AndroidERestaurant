@@ -5,7 +5,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.FileNotFoundException
 
-data class CartItems(val dish: Dish, var quantity: Int) {}
 
 fun getCartItems(context: Context): MutableList<CartItem> {
     val gson = Gson()

@@ -3,6 +3,6 @@
     <item
         android:id="@+id/action_cart"
         android:icon="@drawable/chariot"
-        android:title="@string/cart"
+        android:title="coucou"
         app:showAsAction="always" />
 </menu>
