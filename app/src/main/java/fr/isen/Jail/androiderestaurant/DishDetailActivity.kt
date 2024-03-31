@@ -36,6 +36,7 @@ import coil.compose.LocalImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.google.common.reflect.TypeToken
+import com.google.gson.JsonSyntaxException
 
 
 @OptIn(ExperimentalCoilApi::class)
@@ -120,38 +121,56 @@ class DishDetailActivity : ComponentActivity() {
                         // Other composables...
 
                         Button(onClick = {
-                        // Handle click
-                        val cartItem = CartItem(dish.nameFr, quantity, price.toFloat() * quantity)
-                        val gson = Gson()
+                            // Handle click
+                            val cartItem = CartItem(dish.nameFr, quantity, price.toFloat() * quantity)
+                            val gson = Gson()
 
-                        // Read the existing content of the file
-                        val existingCartItemsJson = applicationContext.openFileInput("cart.json").bufferedReader().use { it.readText() }
-
-                        // Deserialize it into a list of CartItem
-                        val cartItems: MutableList<CartItem> = if (existingCartItemsJson.isNotBlank()) {
-    gson.fromJson(existingCartItemsJson, object : TypeToken<List<CartItem>>() {}.type) as MutableList<CartItem>
-} else {
-    mutableListOf<CartItem>()
-}
-
-                        // Add the new item to the list
-                        cartItems.add(cartItem)
-
-                        // Serialize the updated list back into JSON
-                        val cartItemsJson = gson.toJson(cartItems)
-
-                        // Write the updated JSON back to the file
-                        applicationContext.openFileOutput("cart.json", Context.MODE_PRIVATE).use {
-                            OutputStreamWriter(it).use { writer ->
-                                writer.write(cartItemsJson)
+                            // Check if the file exists before trying to open it
+                            val file = applicationContext.getFileStreamPath("cart.json")
+                            var existingCartItemsJson = ""
+                            if (file != null && file.exists()) {
+                                try {
+                                    // Read the existing content of the file
+                                    existingCartItemsJson = applicationContext.openFileInput("cart.json").bufferedReader().use { it.readText() }
+                                } catch (e: Exception) {
+                                    Log.e("DishDetailActivity", "Error reading cart file", e)
+                                }
                             }
-                        }
 
-                        snackbarHostState.currentSnackbarData?.dismiss()
-                        CoroutineScope(Dispatchers.Main).launch {
-                            snackbarHostState.showSnackbar("Item added to cart")
-                        }
-                    }, modifier = Modifier.padding(bottom = 20.dp)){
+                            // Deserialize it into a list of CartItem
+                            val cartItems: MutableList<CartItem> = if (existingCartItemsJson.isNotBlank()) {
+                                try {
+                                    gson.fromJson(existingCartItemsJson, object : TypeToken<List<CartItem>>() {}.type) as MutableList<CartItem>
+                                } catch (e: JsonSyntaxException) {
+                                    Log.e("DishDetailActivity", "Error parsing cart JSON", e)
+                                    mutableListOf()
+                                }
+                            } else {
+                                mutableListOf()
+                            }
+
+                            // Add the new item to the list
+                            cartItems.add(cartItem)
+
+                            // Serialize the updated list back into JSON
+                            val cartItemsJson = gson.toJson(cartItems)
+
+                            // Write the updated JSON back to the file
+                            try {
+                                applicationContext.openFileOutput("cart.json", Context.MODE_PRIVATE).use {
+                                    OutputStreamWriter(it).use { writer ->
+                                        writer.write(cartItemsJson)
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                Log.e("DishDetailActivity", "Error writing to cart file", e)
+                            }
+
+                            snackbarHostState.currentSnackbarData?.dismiss()
+                            CoroutineScope(Dispatchers.Main).launch {
+                                snackbarHostState.showSnackbar("Item added to cart")
+                            }
+                        }, modifier = Modifier.padding(bottom = 20.dp)){
                             Box(modifier = Modifier.size(width = 300.dp, height = 25.dp), contentAlignment = Alignment.Center) {
                                 val totalPrice = price.toDouble() * quantity.toFloat()
                                 Text(text = "Total: ${totalPrice} €")
@@ -179,6 +198,4 @@ class DishDetailActivity : ComponentActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-
 }

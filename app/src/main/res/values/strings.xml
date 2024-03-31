@@ -12,5 +12,6 @@
     <string name="title_activity_cart_items">CartItems</string>
     <string name="title_activity_order">OrderActivity</string>
     <string name="title_activity_basket">BasketActivity</string>
+    <string name="title_activity_badge_provider">BadgeProvider</string>
 
 </resources>

@@ -3,6 +3,7 @@
     <item
         android:id="@+id/action_cart"
         android:icon="@drawable/chariot"
-        android:title="coucou"
-        app:showAsAction="always" />
+        android:title="Panier"
+        app:showAsAction="always"
+        app:actionProviderClass="fr.isen.Jail.androiderestaurant.BadgeActionProvider" />
 </menu>
